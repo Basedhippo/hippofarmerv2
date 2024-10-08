@@ -1,0 +1,217 @@
+{
+	"compiler": {
+		"version": "0.8.20+commit.a1b79de6"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					}
+				],
+				"name": "allowance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "recipient",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "transfer",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "recipient",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"allowance(address,address)": {
+					"details": "Returns the remaining number of tokens that `spender` is allowed to spend on behalf of `owner`.",
+					"params": {
+						"owner": "The address of the token owner.",
+						"spender": "The address of the spender."
+					},
+					"returns": {
+						"_0": "The remaining number of tokens."
+					}
+				},
+				"approve(address,uint256)": {
+					"details": "Approves `spender` to spend `amount` of the caller's tokens.",
+					"params": {
+						"amount": "The number of tokens to approve for spending.",
+						"spender": "The address which will spend the tokens."
+					},
+					"returns": {
+						"_0": "A boolean value indicating whether the operation succeeded."
+					}
+				},
+				"balanceOf(address)": {
+					"details": "Returns the amount of tokens owned by `account`.",
+					"params": {
+						"account": "The address to query the balance of."
+					},
+					"returns": {
+						"_0": "The amount of tokens owned by `account`."
+					}
+				},
+				"transfer(address,uint256)": {
+					"details": "Transfers `amount` tokens to `recipient`.",
+					"params": {
+						"amount": "The amount of tokens to transfer.",
+						"recipient": "The address to send the tokens to."
+					},
+					"returns": {
+						"_0": "A boolean value indicating whether the operation succeeded."
+					}
+				},
+				"transferFrom(address,address,uint256)": {
+					"details": "Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance.",
+					"params": {
+						"amount": "The number of tokens to transfer.",
+						"recipient": "The address to send the tokens to.",
+						"sender": "The address to send the tokens from."
+					},
+					"returns": {
+						"_0": "A boolean value indicating whether the operation succeeded."
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"IDungToken.sol": "IDungToken"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"IDungToken.sol": {
+			"keccak256": "0xdde3e70ee3d3e708894311bd0ca6c7bebb012c30070a44dc8748e3b5fee5bb80",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://920f6473f496568ae5a7e603415bd1be782a18ba51c916a405533d00c96e45b1",
+				"dweb:/ipfs/QmcXcCS3pzt5GzLhDruZGYG8WKq599gDejC6atHe1dWcoj"
+			]
+		}
+	},
+	"version": 1
+}
