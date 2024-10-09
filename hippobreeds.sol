@@ -7,24 +7,27 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./Base64.sol";
-import "./IDungToken.sol";
-import "./HippoSteroids.sol"; // Importing the steroid contract
+import "./IDungToken.sol"; // Interface for DUNG token
 
-contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
+
+contract HippoBreeds is ERC721, ERC721URIStorage, Ownable(0x7936fFe8FBE49ed325b650359FC1A91E73158553), ReentrancyGuard {    string public baseURI;
     using Counters for Counters.Counter;
     using Strings for uint256;
 
-    Counters.Counter private _tokenIdCounter;
-    uint256 public mintCost = 5000000; // Mint cost in SUN (5 TRX)
-    uint256 public dungRequirement = 100000 * (10 ** 18); // 100,000 $DUNG tokens required to mint
+    Counters.Counter private _tokenIdCounter; // Corrected declaration for _tokenIdCounter
+    uint256 public mintCost = 1; // Mint cost in SUN (5 TRX)
+    uint256 public steroidCost = 1; // Steroid cost in SUN (699.42 TRX)
+    uint256 public dungRequirement = 0 * (10 ** 18); // 100,000 $DUNG tokens required to mint
 
     address public devWallet;
     address public stakingPoolWallet;
+// ...
 
-    uint256 public maxSupply = 1000;
+    uint256 public maxSupply = 1000; // Set a maximum supply for legendary hippos
 
+    // ...
+    // Interface for the $DUNG token
     IDungToken public dungToken;
-    HippoSteroids public steroidContract; // Reference to the steroid contract
 
     struct TraitStruct {
         string name;
@@ -51,11 +54,13 @@ contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
 
     mapping(uint256 => MintStruct) public minted;
     mapping(uint256 => bool) public tokenIdExist;
+    mapping(address => uint256) public steroidBalance;
 
     string[] public environments = ["Savannah", "Mud Bath", "Deep River", "Jungle", "Luxury Hippo Spa"];
     string[] public specialTraits = ["Broken Crackpipe", "Laser Eyes", "Golden Horn", "Diamond Skin", "Flaming Mohawk", "Neon Tusk", "Bulletproof Hide"];
     string[] public rarities = ["Legendary", "Epic", "Mythical", "Divine"];
 
+    event SteroidPurchased(address indexed buyer, uint256 amount);
     event HippoTransformed(uint256 indexed tokenId, string newName);
     event HippoMinted(address indexed owner, uint256 indexed tokenId);
     event HippoBred(address indexed owner, uint256 indexed tokenId);
@@ -65,14 +70,14 @@ contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         string memory initialBaseURI,
         address _dungToken,
         address _devWallet,
-        address _stakingPoolWallet,
-        address _steroidContract // Add reference to the steroid contract
+        address _stakingPoolWallet
     ) ERC721(_name, "HB") {
-        _baseURI = initialBaseURI;
-        dungToken = IDungToken(_dungToken);
-        devWallet = _devWallet;
-        stakingPoolWallet = _stakingPoolWallet;
-        steroidContract = HippoSteroids(_steroidContract); // Initialize the steroid contract
+    
+    }
+
+    /// @notice Returns the base URI for token metadata.
+    function _baseURI() internal view override returns (string memory) {
+        return baseURI;
     }
 
     /// @notice Mints a legendary Hippo NFT, ensuring the user holds 100,000 $DUNG tokens.
@@ -113,19 +118,7 @@ contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         emit HippoBred(msg.sender, tokenId);
     }
 
-    /// @notice Boosts the juiced level of a Hippo using steroids.
-    function boostJuicedLevel(uint256 tokenId) public {
-        require(ownerOf(tokenId) == msg.sender, "Not your hippo");
-        require(steroidContract.steroidBalance(msg.sender) > 0, "No steroids available");
-        require(minted[tokenId].traits.juicedLevel < 10, "Max juiced level reached");
-        minted[tokenId].traits.juicedLevel++;
-        steroidContract.steroidBalance(msg.sender)--;
-         steroidContract.decreaseSteroidBalance(msg.sender);
 
-        if (minted[tokenId].traits.juicedLevel == 10) {
-            transformToTrenHippo(tokenId);
-        }
-    }
 
     /// @dev Internal function to handle Hippo transformation.
     function transformToTrenHippo(uint256 tokenId) internal {
@@ -215,6 +208,23 @@ contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
         return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, seed, salt))) % modulus;
     }
 
+    /// @dev Overridden function to support URI storage.
+ function burnToken(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender, "You do not own this token");
+    
+    // Call the parent contract's _burn function
+    _burn(tokenId);
+
+    // Clean up the minted data for the burned token
+    delete minted[tokenId];
+    delete tokenIdExist[tokenId];
+}
+
+    /// @dev Overridden function to support interface detection.
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
     /// @dev Generate traits for a legendary hippo.
     function generateLegendaryTraits(uint256 tokenId) internal view returns (TraitStruct memory) {
         TraitStruct memory hippo;
@@ -233,30 +243,27 @@ contract HippoBreeds is ERC721, ERC721URIStorage, Ownable, ReentrancyGuard {
     }
 
     /// @dev Generate traits for a bred hippo.
-    function generateBreededTraits(uint256 fatherTokenId, uint256 motherTokenId) internal view returns (TraitStruct memory) {
-        TraitStruct memory hippo;
-        hippo.name = string(abi.encodePacked("Bred Hippo #", _tokenIdCounter.current().toString()));
-        hippo.description = "A hippo bred from two legendary parents.";
-        hippo.strength = (minted[fatherTokenId].traits.strength + minted[motherTokenId].traits.strength) / 2;
-        hippo.endurance = (minted[fatherTokenId].traits.endurance + minted[motherTokenId].traits.endurance) / 2;
-        hippo.speed = (minted[fatherTokenId].traits.speed + minted[motherTokenId].traits.speed) / 2;
-        hippo.juicedLevel = 0;
-        hippo.environment = environments[randomNum(environments.length, block.timestamp, 7)];
-        hippo.rarity = rarities[randomNum(rarities.length, block.timestamp, 8)];
-        hippo.specialTrait = specialTraits[randomNum(specialTraits.length, block.timestamp, 9)];
-        hippo.breeded = true;
-        hippo.isTrenHippo = false;
+function generateBreededTraits(uint256 fatherTokenId, uint256 motherTokenId) internal view returns (TraitStruct memory) {
+    TraitStruct memory hippo;
+    hippo.name = string(abi.encodePacked("Bred Hippo #", _tokenIdCounter.current().toString()));
+    hippo.description = "A hippo bred from two legendary parents.";
+    hippo.strength = (minted[fatherTokenId].traits.strength + minted[motherTokenId].traits.strength) / 2;
+    hippo.endurance = (minted[fatherTokenId].traits.endurance + minted[motherTokenId].traits.endurance) / 2;
+    hippo.speed = (minted[fatherTokenId].traits.speed + minted[motherTokenId].traits.speed) / 2;
+    hippo.juicedLevel = 0;
+    hippo.environment = environments[randomNum(environments.length, block.timestamp, 7)];
+    hippo.rarity = rarities[randomNum(rarities.length, block.timestamp, 8)];
+    hippo.specialTrait = specialTraits[randomNum(specialTraits.length, block.timestamp, 9)];
+    hippo.breeded = true;
+    hippo.isTrenHippo = false;
 
-        uint256[] memory parents = new uint256[](2);
-        parents[0] = fatherTokenId;
-        parents[1] = motherTokenId;
-        hippo.parents = parents;
+    // Declare the parents array within the function scope
+    uint256[] memory parents = new uint256[](2);
+    parents[0] = fatherTokenId;
+    parents[1] = motherTokenId;
 
-        return hippo;
-    }
+    hippo.parents = parents;
 
-    /// @dev Overridden function to support interface detection.
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage) returns (bool) {
-        return super.supportsInterface(interfaceId);
+    return hippo;
     }
 }

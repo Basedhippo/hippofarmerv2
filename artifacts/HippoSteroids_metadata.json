@@ -416,11 +416,11 @@
 			]
 		},
 		"HippoSteroids.sol": {
-			"keccak256": "0xa4d8a04f6f7b773855d888a86b61f3f513c27240a163a98cdcd4ac5160f3a68c",
+			"keccak256": "0x0b68f55a2d148ba701a4e1d55fe5e93ebfce1fbae39eed7efa3ae45b64c7dce5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://76dda4cfe88d43889e2a1685da3f16c9bdb7072b5a105b8e112c6b475e322ce3",
-				"dweb:/ipfs/Qmbo7f482mkfsCxiuDKbKyvWvwiU16freGzpokvCXEUBdi"
+				"bzz-raw://d10b85002be35e6193d6dfb0f3ffcc9eab33ec7549b028d7bef2e22d6dd3c0db",
+				"dweb:/ipfs/QmUjZitZ1VFNiQJkc5c1c2fcPCBLPxMSEx5c8G3RV2S6Hg"
 			]
 		}
 	},
